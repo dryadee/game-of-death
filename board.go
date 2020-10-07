@@ -96,10 +96,12 @@ func (b *Board) AliveNeighbors(x, y int) (int, int) {
 			if i == 0 && j == 0 {
 				continue
 			}
-			if !OutOfBounds(x+i, y+j) {
-				if b.At(x+i, y+j) == BLUE {
+			newX := x+i
+			newY := y+j
+			if InBounds(newX, newY, b.dimension) {
+				if b.At(newX, newY) == BLUE {
 					aliveBlue++
-				} else if b.At(x+i, y+j) == GREEN {
+				} else if b.At(newX, newY) == GREEN {
 					aliveGreen++
 				}
 			}
@@ -145,6 +147,6 @@ func (b *Board) Step() {
 }
 
 // Helper for AliveNeighbors
-func OutOfBounds(x, y int) bool {
-	return (x < 0 || y < 0)
+func InBounds(x, y, dim int) bool {
+	return x >= 0 && y >= 0 && x < dim && y < dim
 }
