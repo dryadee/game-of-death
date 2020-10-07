@@ -6,10 +6,10 @@ import (
 )
 
 const (
-	NUM_CELLS int = 10
-	NONE Color = 0x0
-	BLUE Color = 0x1
-	GREEN Color = 0x2
+	NUM_CELLS int   = 10
+	NONE      Color = 0x0
+	BLUE      Color = 0x1
+	GREEN     Color = 0x2
 )
 
 type Color byte
@@ -18,20 +18,19 @@ type Config struct {
 	// Defaults could also be provided like this
 	// Birth int `default:"3"`
 	// See https://github.com/creasty/defaults
-	Birth int
-	Isolation int
+	Birth          int
+	Isolation      int
 	Overpopulation int
 }
 
 type Board struct {
-	board [][]Color
+	board     [][]Color
 	dimension int
-	gen uint64
+	gen       uint64
 }
 
-
 var (
-	board *Board
+	board  *Board
 	config *Config
 )
 
@@ -43,7 +42,7 @@ func DefaultConfig() *Config {
 // Constructs an empty board
 func EmptyBoard(dim int) *Board {
 	board := make([][]Color, dim)
-	for i:=0; i < dim; i++ {
+	for i := 0; i < dim; i++ {
 		board[i] = make([]Color, dim)
 	}
 	return &Board{board: board, dimension: dim, gen: 0}
@@ -55,9 +54,9 @@ func (b *Board) RandomizeBoard() {
 
 	n := b.dimension
 
-	for x:=0; x < n; x++ {
-		for y:=0; y < n; y++ {
-			if rand.Intn((n * n) / NUM_CELLS) == 1 {
+	for x := 0; x < n; x++ {
+		for y := 0; y < n; y++ {
+			if rand.Intn((n*n)/NUM_CELLS) == 1 {
 				if rand.Intn(2) == 0 {
 					b.Set(x, y, BLUE) // Blue
 				} else {
@@ -69,27 +68,27 @@ func (b *Board) RandomizeBoard() {
 }
 
 // Set value of Cell at (x, y)
-func (b *Board) Set(x int, y int, p Color) Color {
+func (b *Board) Set(x, y int, p Color) Color {
 	replaced := b.At(x, y)
 	b.board[x][y] = p
 	return replaced
 }
 
-func (b *Board) Invert(x int, y int) {
+func (b *Board) Invert(x, y int) {
 	c := b.At(x, y)
 	if c == NONE {
 		return
 	}
-	b.Set(x, y, 3 - c)
+	b.Set(x, y, 3-c)
 }
 
 // Returns value of Cell at (x, y)
-func (b *Board) At(x int, y int) Color {
+func (b *Board) At(x, y int) Color {
 	return b.board[x][y]
 }
 
 // Returns number of blue and green neighbors for Cell at (x, y)
-func (b *Board) AliveNeighbors(x int, y int) (int, int) {
+func (b *Board) AliveNeighbors(x, y int) (int, int) {
 	aliveBlue := 0
 	aliveGreen := 0
 	for i := -1; i < 2; i++ {
@@ -117,26 +116,26 @@ func (b *Board) Step() {
 	next := EmptyBoard(n)
 	next.gen = b.gen + 1
 
-	for x:=0; x < n; x++ {
-		for y:=0; y < n; y++ {
+	for x := 0; x < n; x++ {
+		for y := 0; y < n; y++ {
 			bc, gc := b.AliveNeighbors(x, y)
-			total := bc+gc
+			total := bc + gc
 			if value := b.At(x, y); value == NONE && total == config.Birth {
 				if bc > gc {
 					next.Set(x, y, BLUE)
 				} else {
 					next.Set(x, y, GREEN)
 				}
-			} else if value == BLUE || value == GREEN{
+			} else if value == BLUE || value == GREEN {
 				switch {
-					case total > config.Isolation && total < config.Overpopulation:
-						if bc > gc {
-							next.Set(x, y, BLUE)
-						} else {
-							next.Set(x, y, GREEN)
-						}
-					default:
-						next.Set(x, y, NONE)
+				case total > config.Isolation && total < config.Overpopulation:
+					if bc > gc {
+						next.Set(x, y, BLUE)
+					} else {
+						next.Set(x, y, GREEN)
+					}
+				default:
+					next.Set(x, y, NONE)
 				}
 			}
 
@@ -146,12 +145,6 @@ func (b *Board) Step() {
 }
 
 // Helper for AliveNeighbors
-func OutOfBounds(x int, y int) bool {
+func OutOfBounds(x, y int) bool {
 	return (x < 0 || y < 0)
 }
-
-
-
-
-
-
